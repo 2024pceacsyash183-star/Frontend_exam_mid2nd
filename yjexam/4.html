@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Strength Meter</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            padding-top: 80px;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            width: 350px;
+            border-radius: 10px;
+        }
+        h2 { text-align: center; }
+        input[type="password"],
+        input[type="text"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .bar {
+            height: 10px;
+            background: #ddd;
+            border-radius: 10px;
+            margin: 12px 0;
+        }
+        #progress {
+            height: 10px;
+            width: 0%;
+            border-radius: 10px;
+        }
+        ul { padding-left: 20px; }
+        li { margin: 8px 0; color: gray; }
+        .valid { color: green; }
+        #strength { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Password Strength</h2>
+
+    <input type="password" id="password"
+           placeholder="Enter password">
+
+    <br>
+
+    <input type="checkbox" id="show"
+           onclick="togglePassword()"> Show password
+
+    <div class="bar">
+        <div id="progress"></div>
+    </div>
+
+    <p id="strength"></p>
+
+    <ul id="rules">
+        <li>At least 8 characters</li>
+        <li>One uppercase letter</li>
+        <li>One lowercase letter</li>
+        <li>One number</li>
+        <li>One special symbol (!@#$)</li>
+    </ul>
+</div>
+
+<script>
+let password = document.getElementById("password");
+
+password.addEventListener("input", checkPassword);
+
+function togglePassword() {
+    password.type =
+        document.getElementById("show").checked
+        ? "text" : "password";
+}
+
+function checkPassword() {
+    let p = password.value;
+
+    let checks = [
+        p.length >= 8,
+        /[A-Z]/.test(p),
+        /[a-z]/.test(p),
+        /[0-9]/.test(p),
+        /[^A-Za-z0-9]/.test(p)
+    ];
+
+    let items = document.querySelectorAll("#rules li");
+    let count = 0;
+
+    checks.forEach((valid, i) => {
+        if (valid) {
+            items[i].className = "valid";
+            items[i].innerHTML = "✓ " +
+                items[i].innerHTML.replace("✓ ", "");
+            count++;
+        } else {
+            items[i].className = "";
+            items[i].innerHTML =
+                items[i].innerHTML.replace("✓ ", "");
+        }
+    });
+
+    let bar = document.getElementById("progress");
+    let label = document.getElementById("strength");
+
+    bar.style.width = (count * 20) + "%";
+
+    if (p.length === 0) {
+        label.innerHTML = "";
+        bar.style.width = "0%";
+        bar.style.background = "";
+    }
+    else if (count <= 2) {
+        label.innerHTML = "Weak";
+        bar.style.background = "red";
+    }
+    else if (count <= 4) {
+        label.innerHTML = "Medium";
+        bar.style.background = "orange";
+    }
+    else {
+        label.innerHTML = "Strong";
+        bar.style.background = "green";
+    }
+}
+</script>
+
+</body>
+</html>
